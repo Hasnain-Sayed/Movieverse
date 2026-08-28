@@ -1,0 +1,49 @@
+"use client"
+
+import Card from "../Card";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import { useRef } from "react";
+
+
+export default function TopRatedMovies({ movies }) {
+    const swiperRef = useRef(null)
+
+    return (
+        <section className="py-8 px-4 sm:px-8 md:px-10 lg:px-16 bg-black text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-400 mb-4">
+                Top Rated Movies
+            </h2>
+
+            <Swiper modules={[Autoplay]}
+            onSwiper={(swiper) => {swiperRef.current = swiper}}
+                loop={true}
+                autoplay={{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true,reverseDirection: true }}
+                speed={4000}
+                spaceBetween={20}
+                breakpoints={{
+                    0: { slidesPerView: 3 },
+                    768: { slidesPerView: 4 },
+                    1024: { slidesPerView: 5 },
+                    1280: { slidesPerView: 6 },
+                    1536: {slidesPerView: 7}
+                }}
+            >
+                {movies.length > 0 ? (movies.map((movie) =>
+                    <SwiperSlide key={movie.id}>
+                        <Card media={movie} swiperRef={swiperRef}/>
+                    </SwiperSlide>
+                )) : (
+                    <p className="text-gray-400"> No Top Rated Movies Found</p>
+                )}
+
+            </Swiper>
+
+
+        </section>
+    )
+
+
+
+}
