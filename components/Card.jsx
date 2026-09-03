@@ -74,6 +74,8 @@ export default function Card({ media,swiperRef }) {
                     <Image src={posterPath ? `https://image.tmdb.org/t/p/w500${posterPath}` : "/default_poster.jpg"}
                         alt=''
                         fill
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
                         className="object-cover rounded-t-lg group-hover:brightness-95 transition-all"
                         sizes="33vw"
                         quality={75}

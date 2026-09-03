@@ -1,7 +1,6 @@
 "use client"
 
 import useSWR from "swr"
-import { LoaderFive } from "@/components/ui/loader";
 import { motion } from "framer-motion";
 import MediaDisplay from "@/components/movieSeriesSection/MediaDisplay";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -119,18 +118,6 @@ export default function TvSeriesPage() {
         router.push(`${pathname}?${params.toString()}`)
     };
 
-    // - filter section - step 10: update the loading state to include genres and language data
-
-    // if data is still loading show a loading message
-    if (!seriesData || !genresData || !languagesData) {
-        return (
-            <div className="w-full text-center py-2">
-                <LoaderFive text='Loading...' />
-            </div>
-        )
-    }
-
-
     return (
         <motion.div className="container mx-auto px-4"
             initial={{ opacity: 0, translateX: -40 }}
@@ -141,7 +128,7 @@ export default function TvSeriesPage() {
             <FilterSection genres={genres} languages={languages} placeholder="Search TV Series" />
 
             {/* use filteredSeries instead of tv series in MediaDIspplay component */}
-            <MediaDisplay items={filteredSeries.map((item) => ({
+            <MediaDisplay isLoading={isLoading} items={filteredSeries.map((item) => ({
                 ...item,
                 media_type: "tv",
             }))} />

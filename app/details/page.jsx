@@ -1,6 +1,5 @@
 "use client"
 
-import { LoaderFive } from "@/components/ui/loader";
 import TrailerModal from "@/components/TrailerModal";
 import Card from "@/components/Card";
 import Image from "next/image";
@@ -11,7 +10,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import 'swiper/css';
 import { Undo2 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
+import { Skeleton } from "boneyard-js/react";
 
 
 
@@ -56,7 +56,7 @@ export default function DetailsPage() {
     );
 
     //find the first youtube trailer
-    const trailer = videos?.results.find((v) => v.site === "YouTube" && v.type === "Trailer")
+    const trailer = videos?.results?.find((v) => v.site === "YouTube" && v.type === "Trailer")
     const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1` : null;
 
     //modal open/close handlers
@@ -88,9 +88,22 @@ export default function DetailsPage() {
     //show loading message while data is being fetched
     if (!media) {
         return (
-            <div className="text-white text-center mt-10">
-                <LoaderFive text='Loading...' />
-            </div>
+            <Skeleton name="movie-details" loading>
+                <div className="bg-black text-white min-h-screen p-6">
+                    <div className="mx-auto max-w-6xl space-y-6">
+                        <div className="h-60 rounded-lg bg-[#18181b]" />
+                        <div className="grid gap-6 md:grid-cols-[300px_1fr]">
+                            <div className="aspect-2/3 rounded-lg bg-[#18181b]" />
+                            <div className="space-y-4">
+                                <div className="h-8 w-2/3 rounded bg-[#18181b]" />
+                                <div className="h-5 w-1/3 rounded bg-[#18181b]" />
+                                <div className="h-24 w-full rounded bg-[#18181b]" />
+                                <div className="h-5 w-1/2 rounded bg-[#18181b]" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Skeleton>
         )
     }
 

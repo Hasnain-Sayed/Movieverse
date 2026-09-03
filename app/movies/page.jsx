@@ -1,7 +1,6 @@
 "use client"
 
 import useSWR from "swr"
-import { LoaderFive } from "@/components/ui/loader";
 import { motion } from "framer-motion";
 import MediaDisplay from "@/components/movieSeriesSection/MediaDisplay";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -118,18 +117,6 @@ const handlePageChange = (newPage) => {
     params.set("page",newPage.toString())
     router.push(`${pathname}?${params.toString()}`)
 };
-
-// - filter section - step 10: update the loading state to include genres and language data
-
-// if data is still loading show a loading message
-if (!moviesData || !genresData || !languagesData) {
-    return (
-        <div className="w-full text-center py-2">
-            <LoaderFive text='Loading...' />
-        </div>
-    )
-}
-
     
     return (
         <motion.div className="container mx-auto px-4"
@@ -141,7 +128,7 @@ if (!moviesData || !genresData || !languagesData) {
             <FilterSection genres={genres} languages={languages} placeholder="Search Movies" />
 
             {/* use filteredMovies instead of movies in MediaDIspplay component */}
-            <MediaDisplay items={filteredMovies}/>
+            <MediaDisplay items={filteredMovies} isLoading={isLoading}/>
 
             {/* show the pagination only if there are enough results - update pagination to reflect filterMovies length*/}
             {filteredMovies.length >= 15 && totalPages > 1 && (
