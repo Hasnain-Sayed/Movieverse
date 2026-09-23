@@ -34,7 +34,7 @@ export async function GET(request) {
 
             //generate a new accessToken
             const newAccessToken = jwt.sign(
-                { userId: user._id },
+                { _id: user._id },
                 process.env.JWT_ACCESS_SECRET,
                 { expiresIn: "15m" }
             )

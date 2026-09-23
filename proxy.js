@@ -5,7 +5,7 @@ export function proxy(request) {
     console.log("Proxy pathname: ", pathname)
 
     const publicRoutes = [
-        "/api/auth/register",
+        "/api/auth/signup",
         "/api/auth/login",
         "/api/auth/checkCookies",
         "/api/auth/forgot-password",

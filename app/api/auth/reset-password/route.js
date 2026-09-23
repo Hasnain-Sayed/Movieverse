@@ -7,7 +7,7 @@ import User from "@/models/user";
 export async function POST(request) {
     try {
         const body = await request.json()
-        const { email, otp, newPassword } = body
+        const { email, otp, newPassword,confirmPassword } = body
 
         if (!email || !otp || !newPassword) return NextResponse.json({ message: "All fields are required" }, { status: 400 });
         await connectDB()
@@ -23,7 +23,9 @@ export async function POST(request) {
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10)
-        await User.findOneAndUpdate({ email }, { password: hashedPassword });
+        const hashedConfirmPassword = await bcrypt.hash(confirmPassword, 10)
+        
+        await User.findOneAndUpdate({ email }, { password: hashedPassword , confirmPassword:hashedConfirmPassword});
 
         await OtpToken.deleteOne({ email });
 
