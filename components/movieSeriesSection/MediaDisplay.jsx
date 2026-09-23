@@ -1,7 +1,6 @@
 import Card from "../Card"
 
 export default function MediaDisplay({items,mediaType}){
-    console.log(items)
 
     return (
         <div className="bg-black text-white min-h-screen w-full flex justify-center">

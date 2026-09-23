@@ -1,12 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname} from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { Menu, Search, X } from "lucide-react"
+import { Menu, Search, X, Heart, LogOut } from "lucide-react"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { LoaderFive } from "../ui/loader.jsx";
+import { mutate } from "swr"
+import toast from "react-hot-toast"
+import { useAuth } from "@/context/AuthContext.jsx"
 
 
 export default function Header() {
@@ -21,9 +24,9 @@ export default function Header() {
         { name: "Home", href: "/" },
         { name: "Movies", href: "/movies" },
         { name: "TV Series", href: "/tv-series" },
-
     ]
 
+    const {user} = useAuth()
     //fetch sugesstion from TMDB based on input value
     const fetchSugesstions = async (query) => {
         if (!query.trim()) {
@@ -36,7 +39,8 @@ export default function Header() {
             setIsLoading(true)
             //get TMDB API Key 
             const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY
-            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}`
+            const isAdult = user ? user.age >= 18 : false
+            const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(query)}&include_adult=${isAdult}`
 
             const res = await fetch(url, { cache: "no-store" })//fresh result with no caching
             if (res.ok) {
@@ -59,6 +63,13 @@ export default function Header() {
             setIsLoading(false)
         }
 
+    };
+
+
+    const handleLogout = async () => {
+        await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        await mutate("/api/auth/checkCookies", { success: false, user: null }, false);
+        toast.success("See you next time! 👋");
     };
 
     const handleSubmit = (e) => {
@@ -135,7 +146,7 @@ export default function Header() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-default" type="button"
+                        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-default" type="submit"
                             onClick={isSearchOpen && suggestions.length > 0 ? closeSearch : undefined}
                         >
                             {isLoading ? (
@@ -167,7 +178,7 @@ export default function Header() {
                                 {suggestions.length > 0 ? (
                                     suggestions.map((item) => (
                                         <Link key={item.id} href={`/details?id=${item.id}&media_type=${item.media_type}`}
-                                        onClick={closeSearch}
+                                            onClick={closeSearch}
                                         >
                                             <div className="flex items-center gap-2 p-2 hover:bg-[#252525] rounded-lg cursor-pointer">
                                                 <Image src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/default_poster.jpg"} alt=""
@@ -225,6 +236,39 @@ export default function Header() {
                             </AnimatePresence>
                         </Link>
                     ))}
+
+                    {/* auth buttons — desktop */}
+                    <div className="hidden md:flex items-center gap-3">
+                        {user ? (
+                            <>
+                                {/* Favorites */}
+                                <Link
+                                    href="/favorites"
+                                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 hover:bg-yellow-400/20 transition-colors"
+                                >
+                                    <Heart size={15} />
+                                    Favorites
+                                </Link>
+
+                                {/* Logout */}
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors"
+                                >
+                                    <LogOut size={15} />
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-yellow-400 text-black hover:bg-yellow-500 transition-colors"
+                            >
+                                Sign In
+                            </Link>
+                        )}
+                    </div>
+
                 </nav>
             </div>
 
@@ -272,7 +316,7 @@ export default function Header() {
                                 {suggestions.length > 0 ? (
                                     suggestions.map((item) => (
                                         <Link key={item.id} href={`/details?id=${item.id}&media_type=${item.media_type}`}
-                                        onClick={closeSearch}
+                                            onClick={closeSearch}
                                         >
                                             <div className="flex items-center gap-2 p-2 hover:bg-[#252525] rounded-lg cursor-pointer">
                                                 <Image src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "/default_poster.jpg"} alt=""
@@ -329,6 +373,36 @@ export default function Header() {
                         </Link>
                     ))}
                 </nav>
+                {/* auth buttons — mobile menu */}
+                <div className="flex flex-col items-center gap-2 mt-2 pt-2 border-t border-gray-800">
+                    {user ? (
+                        <>
+                            <Link
+                                href="/favorites"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 w-full justify-center"
+                            >
+                                <Heart size={15} />
+                                Favorites
+                            </Link>
+                            <button
+                                onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 w-full justify-center"
+                            >
+                                <LogOut size={15} />
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <Link
+                            href="/login"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-yellow-400 text-black w-full justify-center"
+                        >
+                            Sign In
+                        </Link>
+                    )}
+                </div>
             </motion.div>
         </motion.header>
     )

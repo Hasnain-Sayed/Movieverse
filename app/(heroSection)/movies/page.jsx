@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect,useMemo,useState } from "react";
 import Pagination from "@/components/movieSeriesSection/Pagination";
 import FilterSection from "@/components/movieSeriesSection/FilterSection";
+import { useAuth } from "@/context/AuthContext";
 
 //create helper function to fetch JSON data from URL (used with SWR to automatically fetch and cache data)
 const fetcher = (url) =>
@@ -30,6 +31,7 @@ const fetcher = (url) =>
 
 export default function MoviesPage() {
 
+    const { user } = useAuth()
     const router = useRouter() // to change the page url when the pagination happens
     const pathname = usePathname() // to get the current page path
     const searchParams = useSearchParams() // to read the current url query like ?page=2
@@ -60,6 +62,7 @@ export default function MoviesPage() {
     // -filter section - step 5 : apply filter parameters to API URL in discover mode
     const apiUrl = new URL(baseUrl)
     apiUrl.searchParams.set('page',page)
+    apiUrl.searchParams.set("include_adult", user?.age >= 18 ? "true" : "false")
     if (!query){
         if (genre !== 'all') apiUrl.searchParams.set("with_genres", genre);
         if (language !== "all") apiUrl.searchParams.set("with_original_language",language);

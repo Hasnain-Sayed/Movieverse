@@ -9,6 +9,7 @@ import "swiper/css/effect-fade"
 import Link  from "next/link";
 import useSWR  from "swr";
 import TrailerModal from "../TrailerModal.jsx";
+import { useAuth } from "@/context/AuthContext.jsx"
 
 //fetch data from the url and return it as json and throw error if the request fails
 const fetcher = (url) => 
@@ -23,6 +24,9 @@ export default function HeroSlider({ movies }) {
     const [swiperInstance, setSwiperInstance] = useState(null) // store swiper instance for controlling slide navigation
     const [isModalOpen, setIsModalOpen] = useState(false)// state to show or hide trailer modal
     const [selectedMedia, setSelectedMedia] = useState(null)// store the selected media to display its trailer
+
+    const {user} = useAuth()
+    const isAdult = user ? user.age >= 18 : false
 
     //create a function to get the media title
     const getMediaTitle = (media) => {
@@ -58,7 +62,7 @@ export default function HeroSlider({ movies }) {
     // fecth trailer videos for the selected media using SWR
     const { data: trailerData, error,isLoading } = useSWR(
         selectedMedia
-            ? `https://api.themoviedb.org/3/${selectedMedia.media_type}/${selectedMedia.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
+            ? `https://api.themoviedb.org/3/${selectedMedia.media_type}/${selectedMedia.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&include_adult=${isAdult}`
             : null,
         fetcher
     );
