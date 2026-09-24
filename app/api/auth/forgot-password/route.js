@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db";
-import { sendResetEmail } from "@/lib/mailer";
+import { sendResetEmail } from "@/lib/emails/mailer";
 import OtpToken from "@/models/OtpToken";
 import User from "@/models/user";
 import { NextResponse } from "next/server";
