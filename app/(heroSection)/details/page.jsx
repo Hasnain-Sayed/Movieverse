@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import DetailsPage from "./DetailsClient";
+import DetailsClient from "./DetailsClient";
 
 export default function Page() {
     return (
         <Suspense fallback={<div className="bg-black min-h-screen" />}>
-            <DetailsPage />
+            <DetailsClient />
         </Suspense>
     );
 }
