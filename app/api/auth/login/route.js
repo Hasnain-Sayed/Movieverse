@@ -3,7 +3,7 @@ import User from "@/models/user";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt"
-import { generateAccessAndRefreshToken } from "@/lib/server";
+import { generateAccessAndRefreshToken } from "@/lib/acc&refCookie";
 
 export async function POST(request) {
     try {
