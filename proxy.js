@@ -16,7 +16,7 @@ export function proxy(request) {
         "/forgot-password",
         "/"
     ]
-    const isPublic = publicRoutes.some((route) => pathname === route || pathname.startsWith(route));
+    const isPublic = publicRoutes.some((route) => pathname === route || pathname.startsWith(route)) || pathname.startsWith("/api/auth/") ;
 
     if (!isPublic) {
         return NextResponse.redirect(new URL('/login', request.url))

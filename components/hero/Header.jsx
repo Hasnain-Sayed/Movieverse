@@ -107,13 +107,13 @@ export default function Header() {
         >
 
             {/* desktop design */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 ">
-                <div className="flex items-center justify-between w-full md:w-auto">
-                    <Link href='/' className="flex flex-col items-center">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-4">
+                <div className="flex items-center justify-between w-full lg:w-auto">
+                    <Link href='/' className="flex flex-col items-center shrink-0">
                         <span className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-yellow-400">
                             MovieVerse
                         </span>
-                        <span className="text-xs lg:text-base text-white">
+                        <span className="text-xs lg:text-base text-white whitespace-nowrap">
                             Movies and TV Series
                         </span>
                     </Link>
@@ -122,7 +122,7 @@ export default function Header() {
 
 
                     {/* mobile menu toggle button */}
-                    <motion.button className="md:hidden text-white hover:text-white/80 cursor-pointer "
+                    <motion.button className="lg:hidden text-white hover:text-white/80 cursor-pointer "
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         whileTap={{ scale: 0.9 }}
                     >
@@ -137,7 +137,7 @@ export default function Header() {
 
                 </div>
                 {/* search bar */}
-                <motion.div className="relative w-full md:w-1/3 md:mx-8 hidden md:block">
+                <motion.div className="relative w-full lg:w-[320px] xl:w-95 lg:mx-6 shrink-0 hidden lg:block">
                     <form onSubmit={handleSubmit}>
                         <input
                             type="text"
@@ -213,12 +213,12 @@ export default function Header() {
 
                 {/* navigation links */}
 
-                <nav className="hidden md:flex md:items-center md:space-x-6" >
+                <nav className="hidden lg:flex lg:items-center lg:gap-4 shrink-0">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
-                            className={`text-sm sm:text-base font-medium relative ${pathname === link.href ? 'text-amber-300' : ' text-white hover:text-white/90'}`}
+                            className={`text-sm sm:text-base font-medium relative whitespace-nowrap ${pathname === link.href ? 'text-amber-300' : ' text-white hover:text-white/90'}`}
                         >
                             {link.name}
 
@@ -238,13 +238,13 @@ export default function Header() {
                     ))}
 
                     {/* auth buttons — desktop */}
-                    <div className="hidden md:flex items-center gap-3">
+                    <div className="hidden lg:flex items-center gap-3">
                         {user ? (
                             <>
                                 {/* Favorites */}
                                 <Link
                                     href="/favorites"
-                                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 hover:bg-yellow-400/20 transition-colors"
+                                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 hover:bg-yellow-400/20 transition-colors cursor-pointer"
                                 >
                                     <Heart size={15} />
                                     Favorites
@@ -253,7 +253,7 @@ export default function Header() {
                                 {/* Logout */}
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors"
+                                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors cursor-pointer"
                                 >
                                     <LogOut size={15} />
                                     Logout
@@ -273,7 +273,7 @@ export default function Header() {
             </div>
 
             {/* mobile menu */}
-            <motion.div className={`md:hidden backdrop-blur-xs bg-[rgba(24,24,27,0.6)] z-50 absolute left-0 w-full px-4 py-4 ${isMenuOpen ? 'block' : 'hidden'}`}
+            <motion.div className={`lg:hidden backdrop-blur-xs bg-[rgba(24,24,27,0.6)] z-50 absolute left-0 w-full px-4 py-4 ${isMenuOpen ? 'block' : 'hidden'}`}
                 initial={{ y: -20, opacity: 0 }}
                 animate={isMenuOpen ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
                 transition={{ duration: 0.3 }}
@@ -286,7 +286,7 @@ export default function Header() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" type="button"
+                        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 or-pointercurs" type="button"
                             onClick={isSearchOpen && suggestions.length > 0 ? closeSearch : undefined}
                         >
                             {isLoading ? (
@@ -380,14 +380,14 @@ export default function Header() {
                             <Link
                                 href="/favorites"
                                 onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 w-full justify-center"
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 w-full justify-center cursor-pointer"
                             >
                                 <Heart size={15} />
                                 Favorites
                             </Link>
                             <button
                                 onClick={() => { handleLogout(); setIsMenuOpen(false); }}
-                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 w-full justify-center"
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 w-full justify-center cursor-pointer"
                             >
                                 <LogOut size={15} />
                                 Logout

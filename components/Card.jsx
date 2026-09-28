@@ -87,14 +87,14 @@ export default function Card({ media,swiperRef }) {
                     ⭐ {voteAverage?.toFixed(1) || "N/A"}
                 </p>
                 <Link href={`/details?id=${id}&media_type=${mediaType}`}>
-                    <h3 className="text-xs sm:text-sm md:text-lg my-1 mx-2 font-semibold text-white line-clamp-2 h-12 sm:h-14 cursor-pointer hover:underline">{displayTitle}</h3>
+                    <h3 className="text-xs sm:text-sm md:text-lg my-1 mx-2 font-semibold text-[#f2f1ef] line-clamp-2 h-12 sm:h-14 cursor-pointer hover:underline">{displayTitle}</h3>
                 </Link>
                 <button 
                 onClick={openModal}
                 disabled={!trailerURL}
-                className={`flex items-center justify-center gap-1 w-full py-2 bg-[#18181b] text-white font-bold border border-gray-600 rounded-3xl hover:bg-[#252525] transition-colors text-sm sm:text-base ${!trailerURL ? 'opacity-50 cursor-not-allowed ' : 'cursor-pointer'}`}>
+                className={`flex items-center justify-center gap-1 w-full py-2 bg-[#18181b] text-[#f6f6f6] font-bold border border-gray-600 rounded-3xl hover:bg-[#252525] transition-colors text-xs  sm:text-sm md:text-base ${!trailerURL ? 'opacity-50 cursor-not-allowed ' : 'cursor-pointer'}`}>
                 
-                    <FaYoutube className="text-red-600 hover:text-red-500 transition-colors" size={24} />
+                    <FaYoutube   className="text-red-600 hover:text-red-500 transition-colors w-5 h-5 md:w-6 md:h-6" />
                         
                     Trailer
 
