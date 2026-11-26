@@ -17,7 +17,8 @@ export function proxy(request) {
         "/",
         "/details",
         "/movies",
-        "/tv"
+        "/tv",
+        "/api/country",
     ]
     const isPublic = pathname === "/" || publicRoutes.some((r) => r !== "/" && pathname.startsWith(r))
     const hasToken = request.cookies.get("accessToken") || request.cookies.get("refreshToken")
