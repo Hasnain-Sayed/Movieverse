@@ -1,4 +1,4 @@
-import HeroSection from "@/components/hero/HeroSection";
+import HeroSection from "@/components/hero/HeroSection"
 import FetchingTrendingMovies from "@/components/fetchingApi/FetchingTrendingMovies"
 import FetchingTopRatedMovies from "@/components/fetchingApi/FetchingTopRatedMovies";
 import FetchingTrendingTvSeries from "@/components/fetchingApi/FetchingTrendingTvSeries";

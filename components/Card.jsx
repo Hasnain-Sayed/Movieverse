@@ -6,24 +6,24 @@ import useSWR from "swr"
 import TrailerModal from "./TrailerModal";
 import { useState } from "react";
 import { FaYoutube } from "react-icons/fa"
-
+import FavoriteButton from "@/components/FavoriteButton";
 
 
 //helper function to fetch json data from url (used with SWR to automaticallly fetch and cache data)
 const fetcher = async (url) => {
-  const response = await fetch(url);
-  const data = await response.json();
+    const response = await fetch(url);
+    const data = await response.json();
 
-  if (!response.ok) {
-    throw new Error(
-      `${response.status}: ${data.status_message || "TMDB request failed"}`
-    );
-  }
+    if (!response.ok) {
+        throw new Error(
+            `${response.status}: ${data.status_message || "TMDB request failed"}`
+        );
+    }
 
-  return data;
+    return data;
 };
 
-export default function Card({ media,swiperRef }) {
+export default function Card({ media, swiperRef }) {
 
     // destructure media properties with fallback values
     const { id, poster_path: posterPath, title, name, vote_average: voteAverage, media_type: mediaType = "movie"
@@ -83,25 +83,30 @@ export default function Card({ media,swiperRef }) {
                 </div>
             </Link>
             <div className="px-1 py-1 sm:px-3 sm:py-4 flex flex-col gap-1 sm:gap-2">
-                <p className="text-xs sm:text-sm text-yellow-400 m-2">
-                    ⭐ {voteAverage?.toFixed(1) || "N/A"}
-                </p>
+                <div className="flex items-center justify-between mx-2 my-2">
+                    <p className="text-xs sm:text-sm text-yellow-400">
+                        ⭐ {voteAverage?.toFixed(1) || "N/A"}
+                    </p>
+                
+                        <FavoriteButton movieId={id} mediaType={mediaType} className="bg-transparent! p-1!" />
+                    
+                </div>
                 <Link href={`/details?id=${id}&media_type=${mediaType}`}>
                     <h3 className="text-xs sm:text-sm md:text-lg my-1 mx-2 font-semibold text-[#f2f1ef] line-clamp-2 h-12 sm:h-14 cursor-pointer hover:underline">{displayTitle}</h3>
                 </Link>
-                <button 
-                onClick={openModal}
-                disabled={!trailerURL}
-                className={`flex items-center justify-center gap-1 w-full py-2 bg-[#18181b] text-[#f6f6f6] font-bold border border-gray-600 rounded-3xl hover:bg-[#252525] transition-colors text-xs  sm:text-sm md:text-base ${!trailerURL ? 'opacity-50 cursor-not-allowed ' : 'cursor-pointer'}`}>
-                
-                    <FaYoutube   className="text-red-600 hover:text-red-500 transition-colors w-5 h-5 md:w-6 md:h-6" />
-                        
+                <button
+                    onClick={openModal}
+                    disabled={!trailerURL}
+                    className={`flex items-center justify-center gap-1 w-full py-2 bg-[#18181b] text-[#f6f6f6] font-bold border border-gray-600 rounded-3xl hover:bg-[#252525] transition-colors text-xs  sm:text-sm md:text-base ${!trailerURL ? 'opacity-50 cursor-not-allowed ' : 'cursor-pointer'}`}>
+
+                    <FaYoutube className="text-red-600 hover:text-red-500 transition-colors w-5 h-5 md:w-6 md:h-6" />
+
                     Trailer
 
                 </button>
             </div>
 
-            <TrailerModal isOpen={isModalOpen} onClose={closeModal} trailerUrl={trailerURL} title={displayTitle}/>
+            <TrailerModal isOpen={isModalOpen} onClose={closeModal} trailerUrl={trailerURL} title={displayTitle} />
 
         </div>
     )

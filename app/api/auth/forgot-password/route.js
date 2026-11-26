@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/db";
 import { sendResetEmail } from "@/lib/emails/mailer";
 import OtpToken from "@/models/OtpToken";
-import User from "@/models/user";
+import User from "@/models/User";
 import { NextResponse } from "next/server";
 import randomOtp from "random-otp-generator";
 

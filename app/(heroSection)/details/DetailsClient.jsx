@@ -12,7 +12,7 @@ import { Autoplay } from "swiper/modules";
 import 'swiper/css';
 import { Undo2 } from "lucide-react";
 import { motion } from "motion/react";
-
+import FavoriteButton from "@/components/FavoriteButton";
 
 
 // create a helper function for useSWR
@@ -49,14 +49,20 @@ export default function DetailsPage() {
         id ? `https://api.themoviedb.org/3/${mediaType}/${id}/videos?api_key=${apiKey}&language=en-US` : null, fetcher
     );
 
+
     // fetch the recommendations movies
     const { data: recommendations } = useSWR(
         id ? `https://api.themoviedb.org/3/${mediaType}/${id}/recommendations?api_key=${apiKey}&language=en-US` : null,
         fetcher
     );
 
+    // fetch the providers
+    const { data: providers } = useSWR(
+        id ? `https://api.themoviedb.org/3/${mediaType}/${id}/watch/providers?api_key=${apiKey}&language=en-US` : null,
+        fetcher
+    );
     //find the first youtube trailer
-    const trailer = videos?.results.find((v) => v.site === "YouTube" && v.type === "Trailer")
+    const trailer = videos?.results?.find((v) => v.site === "YouTube" && v.type === "Trailer")
     const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1` : null;
 
     //modal open/close handlers
@@ -68,6 +74,21 @@ export default function DetailsPage() {
     const getDate = () => mediaType === "movie" ? media?.release_date : media?.first_air_date;
     const getGenres = () => media?.genres?.map((g) => g.name).join(", ") || "N/A";
     const getRating = () => media?.vote_average?.toFixed(1) || "N/A";
+    const getTagline = () => media?.tagline || "";
+
+    function formatMoney(num) {
+        if (!num || num <= 0) return null;
+
+        if (num >= 1_000_000_000) return `$${(num / 1_000_000_000).toFixed(1)}B`;
+        if (num >= 1_000_000) return `$${(num / 1_000_000).toFixed(1)}M`;
+        if (num >= 1_000) return `$${(num / 1_000).toFixed(1)}K`;
+        return `$${num}`;
+    }
+
+    const getBudget = () => formatMoney(media?.budget);
+    const getRevenue = () => formatMoney(media?.revenue);
+
+
     const getRuntime = () => {
         if (mediaType === "movie") {
             return media?.runtime ? `${Math.floor(media.runtime / 60)}h ${media.runtime % 60}m` : "N/A";
@@ -84,6 +105,18 @@ export default function DetailsPage() {
     }
 
     const getCast = () => media?.credits?.cast?.slice(0, 10) || []
+
+    const { data: geo } = useSWR("/api/country", fetcher);
+    const country = geo?.country || "US";
+    console.log('PROVIDER HEAY RIDER : ', country)
+
+    const countryProviders = providers?.results?.[country];
+
+    const providerGroups = [
+        { label: "Stream", items: countryProviders?.flatrate },
+        { label: "Rent", items: countryProviders?.rent },
+        { label: "Buy", items: countryProviders?.buy },
+    ].filter((g) => g.items?.length > 0);
 
     //show loading message while data is being fetched
     if (!media) {
@@ -149,11 +182,21 @@ export default function DetailsPage() {
                             className="object-cover rounded-lg w-full"
                             quality={75}
                         />
-                        <button onClick={openModal}
-                            disabled={!trailerUrl}
-                            className={`mt-4 w-full bg-yellow-400 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base hover:bg-amber-400 transition-colors ${!trailerUrl ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}>
-                            Watch Trailer
-                        </button>
+                        <div className="mt-4 flex w-full items-stretch gap-2">
+                            <button onClick={openModal}
+                                disabled={!trailerUrl}
+                                className={`flex-1 bg-yellow-400 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base hover:bg-amber-400 transition-colors ${!trailerUrl ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}>
+                                Watch Trailer
+                            </button>
+
+
+                            <FavoriteButton
+                                movieId={media.id}
+                                mediaType={mediaType}
+                                className="flex w-1/5 shrink-0 items-center justify-center rounded-lg! bg-white/10!"
+                            />
+
+                        </div>
                     </div>
 
 
@@ -164,7 +207,7 @@ export default function DetailsPage() {
                         </h2>
                         <div className="flex items-center gap-3 sm:gap-4 mt-2">
                             <p className="text-xs sm:text-sm md:text-base text-yellow-400">{getGenres()}</p>
-                            <p className="text-xs sm:text-sm md:text-base">⭐ {getRating()}
+                            <p className="text-xs sm:text-sm md:text-base">⭐{getRating()}
                             </p>
                         </div>
                         <p className="text-sm sm:text-base md:text-lg mt-4 sm:mt-6 text-gray-300">{media.overview || "No description available"}</p>
@@ -178,9 +221,46 @@ export default function DetailsPage() {
                                 <span className="text-gray-300">{getDate()}</span>
                             </p>
                             <p className="text-xs sm:text-sm md:text-base">
-                                <span className="font-medium">{mediaType === "movie" ? "Director" : "Creator"} </span>
+                                <span className="font-medium">{mediaType === "movie" ? "Director" : "Creator"}: </span>
                                 <span className="text-gray-300">{getDirector()}</span>
                             </p>
+
+                            {(media.budget > 0 && media.revenue > 0) && (
+                                <div className="my-4 flex flex-wrap gap-3">
+                                    <div className="min-w-35 rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm">
+                                        <p className="text-xs font-medium uppercase tracking-widest text-gray-400">
+                                            Budget
+                                        </p>
+                                        <p className="mt-1 text-sm  font-bold text-yellow-400 sm:text-base xl:text-lg">
+                                            {getBudget()}
+                                        </p>
+                                    </div>
+
+
+                                    <div className="min-w-35 rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm">
+                                        <p className="text-xs font-medium uppercase tracking-widest text-gray-400">
+                                            Revenue
+                                        </p>
+                                        <p className="mt-1 text-sm  font-bold text-green-400 sm:text-base xl:text-lg">
+                                            {getRevenue()}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {media.tagline && (
+                                <blockquote className="relative my-4 max-w-2xl rounded-r-xl border-l-4 border-yellow-400 bg-white/5 py-3 pl-5 pr-4 backdrop-blur-sm">
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute -top-3 left-3 select-none font-serif text-5xl leading-none text-yellow-400/40"
+                                    >
+                                        &ldquo;
+                                    </span>
+                                    <p className="font-serif text-sm font-medium italic leading-snug text-yellow-300 sm:text-base xl:text-lg">
+                                        {getTagline()}
+                                    </p>
+                                </blockquote>
+                            )}
                         </div>
 
                         {/* cast section */}
@@ -204,6 +284,60 @@ export default function DetailsPage() {
                 </div>
             </section>
 
+            {/* Provider section */}
+            <section className="container mx-auto px-6 sm:px-12 lg:px-40 my-6">
+                <div className="mx-auto w-full max-w-4xl rounded-2xl border border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-sm">
+                    <div className="mb-3 flex items-center justify-between">
+                        <h3 className="text-sm font-semibold uppercase tracking-widest text-gray-300 sm:text-base mb-2">
+                            Where to Watch <span className="text-yellow-400">({country})</span>
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-400">Data by JustWatch</p>
+                    </div>
+
+                    {providerGroups.length > 0 ? (
+                        <div className="divide-y divide-white/10">
+                            {providerGroups.map((group) => (
+                                <div
+                                    key={group.label}
+                                    className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:gap-6"
+                                >
+                                    <p className="w-16 shrink-0 pt-3 text-sm font-semibold text-yellow-400 sm:text-base">
+                                        {group.label}
+                                    </p>
+                                    <div className="flex flex-1 flex-wrap gap-x-3 gap-y-2">
+                                        {group.items.map((p) => (
+                                            <a
+                                                key={p.provider_id}
+                                                href={countryProviders.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title={`Watch on ${p.provider_name}`}
+                                                className="group flex w-16 flex-col items-center gap-1 sm:w-20"
+                                            >
+                                                <Image
+                                                    src={`https://image.tmdb.org/t/p/w92${p.logo_path}`}
+                                                    alt={p.provider_name}
+                                                    width={48}
+                                                    height={48}
+                                                    className="h-12 w-12 rounded-xl object-cover ring-1 ring-white/10 transition duration-200 group-hover:scale-110 group-hover:ring-2 group-hover:ring-yellow-400"
+                                                />
+                                                <span className="line-clamp-2 text-center text-[11px] leading-tight text-gray-200 transition-colors group-hover:text-yellow-400">
+                                                    {p.provider_name}
+                                                </span>
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="py-2 text-center text-sm text-gray-400">
+                            Not available to stream in your region.
+                        </p>
+                    )}
+                </div>
+            </section>
+
             {/* recommendations movies section */}
             {recommendations?.results?.length > 0 && (
                 <section className="container mx-auto px-6 sm:px-12 lg:px-20 xl:px-30 py-6 sm:py-8" >
@@ -214,9 +348,9 @@ export default function DetailsPage() {
                         loop={true}
                         autoplay={{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }}
                         speed={4000}
-                        spaceBetween={20}
+                        spaceBetween={16}
                         breakpoints={{
-                            0: { slidesPerView: 3 },
+                            0: { slidesPerView: 2 },
                             768: { slidesPerView: 3 },
                             1024: { slidesPerView: 4 },
                             1280: { slidesPerView: 5 },

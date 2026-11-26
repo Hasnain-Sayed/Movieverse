@@ -14,11 +14,15 @@ export function proxy(request) {
         "/login",
         "/signup",
         "/forgot-password",
-        "/"
+        "/",
+        "/details",
+        "/movies",
+        "/tv"
     ]
-    const isPublic = publicRoutes.some((route) => pathname === route || pathname.startsWith(route)) || pathname.startsWith("/api/auth/") ;
+    const isPublic = pathname === "/" || publicRoutes.some((r) => r !== "/" && pathname.startsWith(r))
+    const hasToken = request.cookies.get("accessToken") || request.cookies.get("refreshToken")
 
-    if (!isPublic) {
+    if (!isPublic && !hasToken) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 

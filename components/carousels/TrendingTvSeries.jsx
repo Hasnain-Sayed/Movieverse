@@ -21,11 +21,11 @@ export default function TrendingTvSeries({ series }) {
                 loop={true}
                 autoplay={{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }}
                 speed={4000}
-                spaceBetween={20}
+                spaceBetween={16}
                 breakpoints={{
-                    0: { slidesPerView: 3 },
-                    768: { slidesPerView: 4 },
-                    1024: { slidesPerView: 5 },
+                     0: { slidesPerView: 2 },
+                    768: { slidesPerView: 3 },
+                    1024: { slidesPerView: 4 },
                     1280: { slidesPerView: 6 },
                     1536: {slidesPerView: 7}
                 }}
